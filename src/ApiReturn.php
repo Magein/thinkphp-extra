@@ -72,4 +72,14 @@ class ApiReturn
             ]
         );
     }
+
+    public static function auto($result)
+    {
+        if ($result === false) {
+            $message = MsgContainer::instance()->last();
+            return self::error($message['msg'] ?? '', $message['data'] ?? '', $message['code'] ?? 1);
+        }
+
+        return self::success($result);
+    }
 }

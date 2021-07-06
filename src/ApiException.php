@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\common;
+namespace magein\thinkphp_extra;
 
 use magein\thinkphp_extra\ApiReturn;
 use think\db\exception\PDOException;

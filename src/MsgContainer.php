@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\common;
+namespace magein\thinkphp_extra;
 
 
 class MsgContainer

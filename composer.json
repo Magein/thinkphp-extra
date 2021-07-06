@@ -1,6 +1,6 @@
 {
-  "name": "magein/tools",
-  "description": "开发中常用的php工具类",
+  "name": "magein/thinkphp-extra",
+  "description": "thinkphp6扩展文件",
   "type": "library",
   "homepage": "https://github.com/magein/tools",
   "license": "Apache-2.0",
@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=7.2"
+    "php": ">=7.1"
   },
   "autoload": {
     "psr-4": {

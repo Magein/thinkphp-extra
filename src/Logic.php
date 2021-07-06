@@ -2,36 +2,28 @@
 
 namespace magein\thinkphp_extra;
 
+use app\common\MsgContainer;
+use think\exception\ValidateException;
+
 /**
  * Class Logic
  * @package common\logic
  *
- * @method static find($primary_id)
- * @method static where(...$_)
  */
 abstract class Logic
 {
+    protected static $instance = null;
+
     /**
-     * @return mixed
+     * \think\Model
+     * @var null
+     */
+    protected $model = null;
+
+    /**
+     * @return \think\Model
      */
     abstract protected function model();
-
-    /**
-     * @var bool
-     */
-    public $fields = true;
-
-    /**
-     * 执行model类的方法
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        $records = call_user_func_array([self::instance()->model(), $name], $arguments);
-        return $records;
-    }
 
     /**
      * 获取实例
@@ -39,56 +31,56 @@ abstract class Logic
      */
     public static function instance()
     {
-        return new static();
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+
+        return self::$instance;
     }
 
+    /**
+     * @param $primary_id
+     * @return mixed
+     */
+    public function find($primary_id = null)
+    {
+        if ($this->model === null) {
+            $this->model = $this->model();
+        }
+
+        $this->model = $this->model->withoutField(['delete_time', 'update_time']);
+
+        if (empty($primary_id)) {
+            $record = $this->model->find();
+        } else {
+            $record = $this->model->find($primary_id);
+        }
+
+        $this->model = null;
+
+        return $record;
+    }
 
     /**
-     * 查询数据
-     * @param null $model
-     * @return mixed|null
+     * @return mixed
      */
-    public function select($model = null)
+    public function select()
     {
-        $records = null;
-
-        $model = $model ?: $this->model();
-
-        $model = $model->field($this->fields);
-
-        if (request()->param('page')) {
-
-            $page_size = request()->param('page_size', 15);
-
-            $records = call_user_func_array([$model, 'paginate'], [$page_size]);
-
-        } else {
-
-            $records = call_user_func_array([$model, 'select'], []);
-
+        if ($this->model === null) {
+            $this->model = $this->model();
         }
+
+        $this->model = $this->model->withoutField(['delete_time', 'update_time']);
+        if (request()->param('page')) {
+            $page_size = request()->param('page_size', 15);
+            $records = $this->model->paginate($page_size);
+        } else {
+            $records = $this->model->select();
+        }
+
+        $this->model = null;
 
         return $records ? $records : null;
-    }
-
-    /**
-     * 获取字段列
-     * @param $fields
-     * @param string $key
-     * @param null $condition
-     * @return array
-     */
-    public function column($fields, $key = 'id', $condition = null)
-    {
-        $model = $this->model();
-
-        if ($condition) {
-            $model = $model->where($condition);
-        }
-
-        $records = $model->column($fields, $key);
-
-        return $records;
     }
 
     /**
@@ -112,12 +104,12 @@ abstract class Logic
         if ($primary) {
             $model = self::find($primary);
             $result = $model->save($data);
-            return $result === false ? false : $primary;
+            return $result === false ? false : intval($primary);
         } else {
             $model = $this->model();
             $result = $model->save($data);
             if ($result) {
-                return $model->id;
+                return intval($model->id);
             }
             return false;
         }
@@ -165,6 +157,7 @@ abstract class Logic
     }
 
     /**
+     * 恢复数据
      * @param $pk
      * @return bool|int
      */

@@ -11,6 +11,15 @@ namespace magein\thinkphp_extra;
 use magein\tools\common\UnixTime;
 use think\model\concern\SoftDelete;
 
+/**
+ * Class UserModel
+ * @package magein\thinkphp_extra
+ * @property integer $start_time_text
+ * @property integer $end_time_text
+ * @property integer $complete_time_text
+ * @property integer $cancel_time_text
+ * @property integer $verify_time_text
+ */
 class Model extends \think\Model
 {
     use SoftDelete;

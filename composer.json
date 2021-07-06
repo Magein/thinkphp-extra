@@ -13,9 +13,12 @@
   "require": {
     "php": ">=7.1"
   },
+  "config": {
+    "preferred-install": "dist"
+  },
   "autoload": {
     "psr-4": {
-      "magein\\thinkphp_extra": "src/"
+      "magein\\thinkphp_extra\\": "src/"
     }
   }
 }

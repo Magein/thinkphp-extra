@@ -2,7 +2,7 @@
   "name": "magein/thinkphp-extra",
   "description": "thinkphp6扩展文件",
   "type": "library",
-  "homepage": "https://github.com/magein/tools",
+  "homepage": "https://github.com/magein/thinkphp-extra",
   "license": "Apache-2.0",
   "authors": [
     {

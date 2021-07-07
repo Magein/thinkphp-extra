@@ -2,11 +2,8 @@
 
 namespace magein\thinkphp_extra;
 
-use Phinx\Db\Adapter\AdapterInterface;
 use Phinx\Db\Adapter\MysqlAdapter;
-use Phinx\Db\Adapter\TablePrefixAdapter;
 use think\migration\db\Table;
-use think\facade\Config;
 
 /**
  * 添加create_time、update_time、delete_time字段信息

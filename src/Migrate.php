@@ -2,8 +2,11 @@
 
 namespace magein\thinkphp_extra;
 
+use Phinx\Db\Adapter\AdapterInterface;
 use Phinx\Db\Adapter\MysqlAdapter;
+use Phinx\Db\Adapter\TablePrefixAdapter;
 use think\migration\db\Table;
+use think\facade\Config;
 
 /**
  * 添加create_time、update_time、delete_time字段信息
@@ -35,9 +38,68 @@ class Migrate
      */
     private $security_time = true;
 
-    public function __construct(Table $table)
+    /**
+     * Migrate constructor.
+     * @param $table
+     * @param string $comment
+     */
+    public function __construct(Table $table, $comment = '')
     {
         $this->table = $table;
+        if ($comment) {
+            $this->table->setComment($comment);
+        }
+    }
+
+    /**
+     * @param $name
+     * @param array $options
+     * @return mixed
+     */
+    protected function getAdapter($name, array $options)
+    {
+        $class = $this->adapters[$name];
+        return new $class($options);
+    }
+
+    /**
+     * @return array
+     */
+    protected function dbCconfig()
+    {
+        $default = Config::get('database.default');
+
+        $config = Config::get("database.connections.{$default}");
+
+        if (0 == $config['deploy']) {
+            $dbConfig = [
+                'adapter' => $config['type'],
+                'host' => $config['hostname'],
+                'name' => $config['database'],
+                'user' => $config['username'],
+                'pass' => $config['password'],
+                'port' => $config['hostport'],
+                'charset' => $config['charset'],
+                'table_prefix' => $config['prefix'],
+            ];
+        } else {
+            $dbConfig = [
+                'adapter' => explode(',', $config['type'])[0],
+                'host' => explode(',', $config['hostname'])[0],
+                'name' => explode(',', $config['database'])[0],
+                'user' => explode(',', $config['username'])[0],
+                'pass' => explode(',', $config['password'])[0],
+                'port' => explode(',', $config['hostport'])[0],
+                'charset' => explode(',', $config['charset'])[0],
+                'table_prefix' => explode(',', $config['prefix'])[0],
+            ];
+        }
+
+        $table = Config::get('database.migration_table', 'migrations');
+
+        $dbConfig['default_migration_table'] = $dbConfig['table_prefix'] . $table;
+
+        return $dbConfig;
     }
 
     /**
@@ -93,13 +155,14 @@ class Migrate
 
         if ($this->dv !== null && empty($options['default'] ?? '')) {
             $options['default'] = $this->dv;
-            $this->dv = null;
         }
 
         if ($this->limit && empty($options['limit'] ?? '')) {
             $options['limit'] = $this->limit;
-            $this->limit = 0;
         }
+
+        $this->dv = null;
+        $this->limit = 0;
 
         return $options;
     }
@@ -110,6 +173,13 @@ class Migrate
      */
     public function setInt($name, $options = '')
     {
+        if (is_string($options)) {
+            $options = [
+                'comment' => $options,
+                'limit' => $this->limit ?: 11,
+            ];
+        }
+
         $this->table->addColumn($name, 'integer', $this->getOption($options));
     }
 
@@ -122,7 +192,7 @@ class Migrate
         if (is_string($options)) {
             $options = [
                 'comment' => $options,
-                'limit' => MysqlAdapter::INT_TINY,
+                'limit' => $this->limit ?: MysqlAdapter::INT_TINY,
             ];
         }
 
@@ -155,7 +225,7 @@ class Migrate
         if (is_string($options)) {
             $options = [
                 'comment' => $options,
-                'limit' => 255,
+                'limit' => $this->limit ?: 255,
             ];
         }
 

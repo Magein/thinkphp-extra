@@ -9,6 +9,13 @@ use think\Exception;
 
 class ViewController
 {
+
+    /**
+     * 安全参数路径
+     * @var string
+     */
+    protected $namespace = 'view';
+
     /**
      * @param $name
      * @param $arguments
@@ -24,7 +31,7 @@ class ViewController
         }
 
         $name = (new Variable())->pascal($name);
-        $name = 'view\\' . $name;
+        $name = $this->namespace . '\\' . $name;
 
         try {
             $view = new DataView($name);

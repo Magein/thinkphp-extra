@@ -22,16 +22,10 @@ class ViewController
      */
     public function __call($name, $arguments)
     {
-        $lists = explode('.', $name);
+        $route = request()->route();
 
-        // 兼用声明了控制器的方法
-        if (count($lists) === 1) {
-            $name = class_basename(static::class);
-            $action = $lists[0] ?? '';
-        } else {
-            $name = $lists[0] ?? '';
-            $action = $lists[1] ?? '';
-        }
+        $name = $route['controller'] ?? '';
+        $action = $route['action'] ?? '';
 
         if (empty($name) || empty($action)) {
             return ApiReturn::error('参数错误');
@@ -40,7 +34,6 @@ class ViewController
         if (false === $this->auth()) {
             return ApiReturn::error('尚未获得权限');
         };
-
 
         $name = (new Variable())->pascal($name);
         $name = $this->namespace . '\\' . $name;

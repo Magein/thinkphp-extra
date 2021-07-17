@@ -3,7 +3,6 @@
 
 namespace magein\thinkphp_extra;
 
-use magein\thinkphp_extra\ApiReturn;
 use think\db\exception\PDOException;
 use think\exception\Handle;
 use think\exception\HttpException;

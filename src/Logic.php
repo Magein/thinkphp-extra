@@ -2,7 +2,6 @@
 
 namespace magein\thinkphp_extra;
 
-use app\common\MsgContainer;
 use think\exception\ValidateException;
 
 /**
@@ -21,9 +20,28 @@ abstract class Logic
     protected $model = null;
 
     /**
+     * 过滤的字段
+     * @var string[]
+     */
+    public $withoutField = ['delete_time', 'update_time'];
+
+    /**
+     * 获取或者设置model
      * @return \think\Model
      */
-    abstract protected function model();
+    public function model($model = null)
+    {
+        if ($model === null) {
+            $namespace = static::class . 'Model';
+            if (class_exists($namespace)) {
+                $this->model = new $namespace();
+            }
+        } else {
+            $this->model = $model;
+        }
+
+        return $this->model;
+    }
 
     /**
      * 获取实例
@@ -48,7 +66,9 @@ abstract class Logic
             $this->model = $this->model();
         }
 
-        $this->model = $this->model->withoutField(['delete_time', 'update_time']);
+        if ($this->withoutField) {
+            $this->model = $this->model->withoutField($this->withoutField);
+        }
 
         if (empty($primary_id)) {
             $record = $this->model->find();
@@ -70,7 +90,10 @@ abstract class Logic
             $this->model = $this->model();
         }
 
-        $this->model = $this->model->withoutField(['delete_time', 'update_time']);
+        if ($this->withoutField) {
+            $this->model = $this->model->withoutField($this->withoutField);
+        }
+
         if (request()->param('page')) {
             $page_size = request()->param('page_size', 15);
             $records = $this->model->paginate($page_size);
@@ -91,6 +114,10 @@ abstract class Logic
      */
     public function save($data, $validate = null, $scene = null)
     {
+        if (empty($data) || !is_array($data)) {
+            return MsgContainer::msg('保存的数据为空');
+        }
+
         $primary = $data['id'] ?? '';
 
         if ($validate) {
@@ -108,6 +135,9 @@ abstract class Logic
         } else {
             $model = $this->model();
             $result = $model->save($data);
+
+            $this->model = null;
+
             if ($result) {
                 return intval($model->id);
             }

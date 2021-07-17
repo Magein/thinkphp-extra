@@ -286,7 +286,7 @@ class Migrate
      */
     public function title($options = '标题')
     {
-        $this->setLimit(30)->setInt('title', $options);
+        $this->setLimit(30)->setString('title', $options);
     }
 
     /**

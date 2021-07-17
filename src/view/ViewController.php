@@ -37,6 +37,11 @@ class ViewController
             return ApiReturn::error('参数错误');
         }
 
+        if (false === $this->auth()) {
+            return ApiReturn::error('尚未获得权限');
+        };
+
+
         $name = (new Variable())->pascal($name);
         $name = $this->namespace . '\\' . $name;
 
@@ -55,5 +60,14 @@ class ViewController
         }
 
         return ApiReturn::success();
+    }
+
+    /**
+     * 权限控制
+     * @return bool
+     */
+    protected function auth()
+    {
+        return false;
     }
 }

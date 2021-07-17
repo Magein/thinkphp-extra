@@ -39,7 +39,8 @@ banner图、商品分类、配置信息、等等一般都是 表格，表单进�
 1. 添加路由
 
 ```php
-Route::rule('admin/view/:name/:action', 'admin.view/:name.:action');
+//放在路由的最后一条，当找前面的控制器都找不到的时候，再去匹配
+Route::rule('admin/:controller/:action', 'admin.view/:action');
 ```
 
 2. 访问路径 localhost.xx.com/admin/view/user/lists?page_id=1&sex=1

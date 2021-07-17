@@ -3,7 +3,6 @@
 namespace magein\thinkphp_extra\view;
 
 use magein\thinkphp_extra\ApiReturn;
-use magein\thinkphp_extra\view\DataView;
 use magein\tools\common\Variable;
 use think\Exception;
 
@@ -24,8 +23,16 @@ class ViewController
     public function __call($name, $arguments)
     {
         $lists = explode('.', $name);
-        $name = $lists[0] ?? '';
-        $action = $lists[1] ?? '';
+
+        // 兼用声明了控制器的方法
+        if (count($lists) === 1) {
+            $name = class_basename(static::class);
+            $action = $lists[0] ?? '';
+        } else {
+            $name = $lists[0] ?? '';
+            $action = $lists[1] ?? '';
+        }
+
         if (empty($name) || empty($action)) {
             return ApiReturn::error('参数错误');
         }

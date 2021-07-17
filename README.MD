@@ -170,5 +170,5 @@ class User extends DataSecurity
 | delete | delete | 删除数据 |   admin/view/user/delete?id=1  |
 | recovery | patch | 恢复数据 |  admin/view/user/delete?id=1  |
 
-
+6. 当一个类继承了ViewController就获取了resetful规范下的curd操作，当然你可以可以继承重写，只要满足进入__call的条件
 

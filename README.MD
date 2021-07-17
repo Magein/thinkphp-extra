@@ -98,5 +98,77 @@ class User extends DataSecurity
 }
 ```
 
- 
+4. localhost.xx.com/admin/view/user/lists?page_id=1 即可获得user表中的数据，搜索参数会根据use.php中的query过滤
+
+ ```json
+{
+  "code": 0,
+  "msg": "",
+  "data": [
+    {
+      "id": 1,
+      "username": "1233",
+      "password": "455",
+      "phone": "12321",
+      "email": "1",
+      "sex": 0,
+      "status": 0,
+      "create_time": 1
+    },
+    {
+      "id": 2,
+      "username": "2323",
+      "password": "3232",
+      "phone": "32",
+      "email": "3232",
+      "sex": 0,
+      "status": 0,
+      "create_time": 32
+    },
+    {
+      "id": 3,
+      "username": "12312321313",
+      "password": "12312313",
+      "phone": "15956946055",
+      "email": "",
+      "sex": 0,
+      "status": 0,
+      "create_time": 1626504091
+    },
+    {
+      "id": 11,
+      "username": "123123213131",
+      "password": "12312313",
+      "phone": "15956946054",
+      "email": "1334@qq.com",
+      "sex": 0,
+      "status": 0,
+      "create_time": 1626505332
+    },
+    {
+      "id": 12,
+      "username": "1231232131311",
+      "password": "12312313",
+      "phone": "15956946053",
+      "email": "",
+      "sex": 0,
+      "status": 0,
+      "create_time": 1626506485
+    }
+  ]
+}
+```
+
+5. 声明的方法
+
+| 名称 | 请求类型 | 描述 |  url  |
+| :-----| ----: | :----: | :----: |
+| get | get | 获取单条记录 需要传递id | admin/view/user/get?id=1 |
+| lists | get | 设置page表示分页，获取15条数据，查询直接携带即可 | admin/view/user/lists?page=1|
+| post | post | 新增数据 | admin/view/user/post  |
+| put | put | 更新数据 | admin/view/user/put  |
+| delete | delete | 删除数据 |   admin/view/user/delete?id=1  |
+| recovery | patch | 恢复数据 |  admin/view/user/delete?id=1  |
+
+
 

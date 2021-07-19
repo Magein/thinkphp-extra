@@ -33,10 +33,11 @@ class ViewController
      */
     public function __call($name, $arguments)
     {
-        $route = request()->route();
+        $path = request()->pathinfo();
+        $path = explode('/', $path);
 
-        $name = $route['controller'] ?? '';
-        $action = $route['action'] ?? '';
+        $name = $path[1] ?? '';
+        $action = $path[2] ?? '';
 
         if (empty($name) || empty($action)) {
             return ApiReturn::error(ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
@@ -52,7 +53,7 @@ class ViewController
         if (empty($namespace)) {
             $namespace = $this->namespace . '\\' . $name;
         }
-        
+
         try {
             if (class_exists($namespace)) {
                 $view = new DataView(new $namespace());

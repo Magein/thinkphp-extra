@@ -11,16 +11,18 @@ class ApiCode
     // 请求失败
     const ERROR = 1;
 
-    // http请求被拒绝
+    // HTTP 请求被拒绝 X-REQUEST-ID 错误
     const HTTP_REQUEST_REFUSE = 10001;
-    // http请求的接口没有权限
-    const HTTP_REQUEST_API_ILLEGAL = 10002;
-    // HTTP请求的method非法
-    const HTTP_REQUEST_METHOD_ILLEGAL = 10003;
-    // HTTP请求参数非法，为空或者类型不对
-    const HTTP_REQUEST_QUERY_ILLEGAL = 10005;
+    // HTTP token错误
+    const HTTP_REQUEST_TOKEN_ERROR = 10003;
+    // HTTP 请求的接口没有权限
+    const HTTP_REQUEST_API_ILLEGAL = 10005;
+    // HTTP 请求的method非法
+    const HTTP_REQUEST_METHOD_ILLEGAL = 10006;
+    // HTTP 请求参数非法，为空或者类型不对
+    const HTTP_REQUEST_QUERY_ILLEGAL = 10007;
     // HTTP post请求参数错误
-    const HTTP_REQUEST_POST_ILLEGAL = 10006;
+    const HTTP_REQUEST_POST_ILLEGAL = 10008;
 
     // 数据库错误
     const DATABASE_ERROR = 40001;

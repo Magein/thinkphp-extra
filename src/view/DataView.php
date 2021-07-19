@@ -95,6 +95,7 @@ class DataView
      */
     protected function lists()
     {
+
         $params = $this->search();
         $model = $this->logic->model();
         if ($params) {

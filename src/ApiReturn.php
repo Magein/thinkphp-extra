@@ -27,7 +27,7 @@ class ApiReturn
      * @param int $code
      * @return Response
      */
-    public static function success($data = null, $message = '', $code = 0): Response
+    public static function success($data = null, $message = '', $code = ApiCode::SUCCESS): Response
     {
         return self::data(
             [
@@ -45,7 +45,7 @@ class ApiReturn
      * @param int $code
      * @return Response
      */
-    public static function error($message = '', $data = '', $code = 1): Response
+    public static function error($message = '', $data = '', $code = ApiCode::ERROR): Response
     {
         return self::data(
             [

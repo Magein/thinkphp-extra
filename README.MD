@@ -14,6 +14,8 @@ MsgContainer 消息容器
 
 ApiException 异常捕获器
 
+ApiCode 自定义的api请求返回的编码
+
 ### 消息容器、异常捕获器
 
 在logic的save方法中验证类抛出的是异常，会在ApiException中获取然后返回给前端

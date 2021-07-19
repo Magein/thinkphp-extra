@@ -8,10 +8,18 @@
 
 namespace magein\thinkphp_extra\view;
 
+use think\Exception;
+
 class DataSecurity
 {
     /**
-     * 使用的模型
+     * 自动设置fields信息
+     * @var bool
+     */
+    protected $auto = false;
+
+    /**
+     * 使用的业务类
      * @var string
      */
     protected $logic = '';
@@ -38,7 +46,7 @@ class DataSecurity
      * 暴露给前端的字段
      * @var array
      */
-    protected $fields = [];
+    protected $export = [];
 
     /**
      * @return string
@@ -113,18 +121,36 @@ class DataSecurity
     /**
      * @return array
      */
-    public function getFields(): array
+    public function getExport(): array
     {
-        return $this->fields;
+        return $this->export;
     }
 
     /**
-     * @param array $query
+     * @param array $export
      */
-    public function setFields(array $query = [])
+    public function setExport(array $export = [])
     {
-        if ($query) {
-            $this->query = is_array($query) ? $query : [$query];
+        if ($export) {
+            $this->export = is_array($export) ? $export : [$export];
+        }
+    }
+    
+    public function setFields()
+    {
+        if ($this->auto) {
+            try {
+                if (class_exists($this->logic)) {
+                    $logic = new $logic();
+                    $fields = $logic->getFields();
+                    $this->setPost($fields);
+                    $this->setPut($fields);
+                    $this->setFields($fields);
+                    $this->setQuery($fields);
+                }
+            } catch (Exception $exception) {
+
+            }
         }
     }
 }

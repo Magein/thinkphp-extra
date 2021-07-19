@@ -2,9 +2,11 @@
 
 namespace magein\thinkphp_extra\view;
 
+use magein\thinkphp_extra\ApiCode;
 use magein\thinkphp_extra\ApiReturn;
 use magein\tools\common\Variable;
 use think\Exception;
+use think\exception\ErrorException;
 
 class ViewController
 {
@@ -14,6 +16,15 @@ class ViewController
      * @var string
      */
     protected $namespace = 'view';
+
+    /**
+     * @param $name
+     * @return string
+     */
+    protected function mapping()
+    {
+        return [];
+    }
 
     /**
      * @param $name
@@ -28,31 +39,30 @@ class ViewController
         $action = $route['action'] ?? '';
 
         if (empty($name) || empty($action)) {
-            return ApiReturn::error('参数错误');
+            return ApiReturn::error(ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
         }
 
         if (false === $this->auth()) {
-            return ApiReturn::error('尚未获得权限');
+            return ApiReturn::error(ApiCode::HTTP_REQUEST_API_ILLEGAL);
         };
 
         $name = (new Variable())->pascal($name);
-        $name = $this->namespace . '\\' . $name;
+        $namespace = $this->mapping()[$name] ?? '';
 
+        if (empty($namespace)) {
+            $namespace = $this->namespace . '\\' . $name;
+        }
+        
         try {
-            $view = new DataView($name);
-        } catch (Exception $exception) {
-            $message = $exception->getMessage();
+            if (class_exists($namespace)) {
+                $view = new DataView(new $namespace());
+                return $view->response($action);
+            }
+        } catch (ErrorException $exception) {
+
         }
 
-        if (isset($message)) {
-            return ApiReturn::error($message);
-        }
-
-        if (isset($view)) {
-            return $view->response($action);
-        }
-
-        return ApiReturn::success();
+        return ApiReturn::code(ApiCode::VIEW_SECURITY_ERROR);
     }
 
     /**

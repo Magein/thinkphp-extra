@@ -14,19 +14,19 @@ class ApiException extends Handle
 {
     public function render($request, Throwable $e): Response
     {
-        // 参数验证错误
+        // 请求异常
+        if ($e instanceof HttpException && $request->isAjax()) {
+            return ApiReturn::code(ApiCode::HTTP_REQUEST_METHOD_ILLEGAL, $e->getMessage());
+        }
+
+        // 保存数据，验证失败的错误信息
         if ($e instanceof ValidateException) {
-            return ApiReturn::error($e->getMessage());
+            return ApiReturn::code(ApiCode::HTTP_REQUEST_POST_ILLEGAL, $e->getMessage());
         }
 
         // 数据库错误
         if ($e instanceof PDOException) {
-            return ApiReturn::code(4001, '服务器出错了~');
-        }
-
-        // 请求异常
-        if ($e instanceof HttpException && $request->isAjax()) {
-            return ApiReturn::error($e->getMessage());
+            return ApiReturn::code(ApiCode::DATABASE_ERROR, $e->getMessage());
         }
 
         // 其他错误交给系统处理

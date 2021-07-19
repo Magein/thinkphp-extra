@@ -2,6 +2,7 @@
 
 namespace magein\thinkphp_extra\view;
 
+use magein\thinkphp_extra\ApiCode;
 use magein\thinkphp_extra\ApiReturn;
 use magein\thinkphp_extra\Logic;
 use magein\thinkphp_extra\MsgContainer;
@@ -26,13 +27,9 @@ class DataView
      * @param string $name
      * @throws \think\Exception
      */
-    public function __construct(string $name = '')
+    public function __construct(DataSecurity $name)
     {
-        if ($name && class_exists($name)) {
-            $this->setDataSecurity(new $name());
-        } else {
-            throw new Exception('view not find');
-        }
+        $this->setDataSecurity($name);
     }
 
     /**
@@ -45,10 +42,13 @@ class DataView
 
         $logic = $dataSecurity->getLogic();
 
-        if ($logic && class_exists($logic)) {
-            $this->logic = new $logic();
-        } else {
-            throw new Exception('logic not find');
+        try {
+            if ($logic && class_exists($logic)) {
+                $this->logic = new $logic();
+                $this->view->setFields();
+            }
+        } catch (Exception $exception) {
+
         }
     }
 
@@ -57,6 +57,10 @@ class DataView
      */
     public function response($method)
     {
+        if (!$this->logic instanceof Logic) {
+            return ApiReturn::code(ApiCode::VIEW_LOGIC_ERROR);
+        }
+
         $result = false;
         if (method_exists($this, $method)) {
             $result = call_user_func_array([$this, $method], []);
@@ -75,8 +79,8 @@ class DataView
 
         $model = $this->logic->model();
 
-        if ($this->view->getFields()) {
-            $model = $model->field($this->view->getFields());
+        if ($this->view->getExport()) {
+            $model = $model->field($this->view->getExport());
             $this->logic->withoutField = [];
         }
 
@@ -97,8 +101,8 @@ class DataView
             $model = $model->where($params);
         }
 
-        if ($this->view->getFields()) {
-            $model = $model->field($this->view->getFields());
+        if ($this->view->getExport()) {
+            $model = $model->field($this->view->getExport());
             $this->logic->withoutField = [];
         }
 
@@ -117,8 +121,12 @@ class DataView
 
         $validate = get_class($this->logic) . 'Validate';
 
-        if (!class_exists($validate)) {
-            $validate = '';
+        try {
+            if (!class_exists($validate)) {
+                $validate = '';
+            }
+        } catch (Exception $exception) {
+
         }
 
         return $this->logic->save($params, $validate);
@@ -137,12 +145,16 @@ class DataView
 
         $validate = get_class($this->logic) . 'Validate';
 
-        if (!class_exists($validate)) {
-            $validate = '';
+        try {
+            if (!class_exists($validate)) {
+                $validate = '';
+            }
+        } catch (Exception $exception) {
+
         }
 
         if (empty($id)) {
-            return MsgContainer::msg('更新数据异常');
+            return MsgContainer::msg('更新数据异常', ApiCode::HTTP_REQUEST_PARAM_ERROR);
         }
 
         $params['id'] = $id;
@@ -160,7 +172,7 @@ class DataView
         $id = request()->patch('id');
 
         if (empty($id)) {
-            return MsgContainer::msg('数据恢复失败');
+            return MsgContainer::msg('数据恢复失败', ApiCode::HTTP_REQUEST_PARAM_ERROR);
         }
 
         return $this->logic->recovery($id);
@@ -176,7 +188,7 @@ class DataView
         $clear = request()->delete('clear', 0);
 
         if (empty($id)) {
-            return MsgContainer::msg('数据删除失败');
+            return MsgContainer::msg('数据删除失败', ApiCode::HTTP_REQUEST_PARAM_ERROR);
         }
 
         return $this->logic->delete($id, $clear);

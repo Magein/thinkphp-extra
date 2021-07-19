@@ -20,6 +20,12 @@ abstract class Logic
     protected $model = null;
 
     /**
+     * 拥有的字段信息
+     * @var array
+     */
+    protected $fields = [];
+
+    /**
      * 过滤的字段
      * @var string[]
      */
@@ -54,6 +60,15 @@ abstract class Logic
         }
 
         return self::$instance;
+    }
+
+    /**
+     * 返回设置的字段信息
+     * @return array
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
     }
 
     /**
@@ -115,7 +130,7 @@ abstract class Logic
     public function save($data, $validate = null, $scene = null)
     {
         if (empty($data) || !is_array($data)) {
-            return MsgContainer::msg('保存的数据为空');
+            return MsgContainer::msg('', ApiCode::HTTP_REQUEST_POST_ILLEGAL);
         }
 
         $primary = $data['id'] ?? '';

@@ -2,6 +2,7 @@
 
 namespace magein\thinkphp_extra;
 
+use think\db\Query;
 use think\exception\ValidateException;
 
 /**
@@ -26,10 +27,31 @@ abstract class Logic
     protected $fields = [];
 
     /**
+     * 设置的条件
+     * @var array
+     */
+    protected $where = [];
+
+    /**
      * 过滤的字段
      * @var string[]
      */
     public $withoutField = ['delete_time', 'update_time'];
+
+    /**
+     * 包含回收站的数据
+     * @var bool
+     */
+    protected $withTrashed = false;
+
+    /**
+     * 获取实例
+     * @return static
+     */
+    public static function instance()
+    {
+        return new static();
+    }
 
     /**
      * 获取或者设置model
@@ -40,26 +62,49 @@ abstract class Logic
         if ($model === null) {
             $namespace = static::class . 'Model';
             if (class_exists($namespace)) {
-                $this->model = new $namespace();
+                $model = new $namespace();
             }
-        } else {
-            $this->model = $model;
         }
 
-        return $this->model;
+        if ($model instanceof Query) {
+            $model = $model->getModel();
+        }
+
+        if ($this->withTrashed) {
+            $model = $model::withTrashed()
+                ->where($this->where)
+                ->order('id', 'desc')
+                ->withoutField($this->withoutField);
+        } else {
+            $model = $model->where($this->where)
+                ->order('id', 'desc')
+                ->withoutField($this->withoutField);
+        }
+
+        return $model;
+
     }
 
     /**
-     * 获取实例
-     * @return static
+     * 设置条件
+     * @param $where
      */
-    public static function instance()
+    protected function where($where)
     {
-        if (self::$instance === null) {
-            self::$instance = new static();
-        }
+        $this->where = $where;
 
-        return self::$instance;
+        return $this;
+    }
+
+    /**
+     * @param $withTrashed
+     * @return $this
+     */
+    public function withTrashed($withTrashed = true)
+    {
+        $this->withTrashed = $withTrashed;
+
+        return $this;
     }
 
     /**
@@ -77,48 +122,42 @@ abstract class Logic
      */
     public function find($primary_id = null)
     {
-        if ($this->model === null) {
-            $this->model = $this->model();
-        }
-
-        if ($this->withoutField) {
-            $this->model = $this->model->withoutField($this->withoutField);
-        }
+        $model = $this->model();
 
         if (empty($primary_id)) {
-            $record = $this->model->find();
+            $record = $model->find();
         } else {
-            $record = $this->model->find($primary_id);
+            $record = $model->find($primary_id);
         }
-
-        $this->model = null;
 
         return $record;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function select()
     {
-        if ($this->model === null) {
-            $this->model = $this->model();
-        }
-
-        if ($this->withoutField) {
-            $this->model = $this->model->withoutField($this->withoutField);
-        }
+        $model = $this->model();
 
         if (request()->param('page')) {
             $page_size = request()->param('page_size', 15);
-            $records = $this->model->paginate($page_size);
+            $records = $model->paginate($page_size);
         } else {
-            $records = $this->model->select();
+            $records = $model->select();
         }
 
-        $this->model = null;
+        return $records ? $records : [];
+    }
 
-        return $records ? $records : null;
+    /**
+     * @param $key
+     * @param $field
+     * @return array
+     */
+    public function column($key, $field)
+    {
+        return $this->model->column($field, $key);
     }
 
     /**

@@ -4,9 +4,8 @@ namespace magein\thinkphp_extra\view;
 
 use magein\thinkphp_extra\ApiCode;
 use magein\thinkphp_extra\ApiReturn;
-use magein\thinkphp_extra\Extra;
-use magein\thinkphp_extra\Logic;
 use magein\thinkphp_extra\MsgContainer;
+use magein\thinkphp_extra\Overt;
 use magein\tools\common\UnixTime;
 use think\Exception;
 use think\Model;
@@ -116,7 +115,7 @@ class DataView
 
         $result = $model->paginate($page_size);
 
-        return Extra::paginate($result, $page_size);
+        return Overt::paginate($result, $page_size);
     }
 
     /**

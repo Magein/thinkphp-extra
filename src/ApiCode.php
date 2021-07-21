@@ -30,5 +30,5 @@ class ApiCode
     // 渲染视图错误 找不到对应的视图安全类
     const VIEW_SECURITY_ERROR = 50001;
     // 渲染的视图错误  找不到对应的业务类
-    const VIEW_LOGIC_ERROR = 50002;
+    const VIEW_MODEL_ERROR = 50002;
 }

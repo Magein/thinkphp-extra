@@ -60,10 +60,10 @@ class ViewController
                 return $view->response($action);
             }
         } catch (ErrorException $exception) {
-
+            $message = $exception->getMessage();
         }
 
-        return ApiReturn::code(ApiCode::VIEW_SECURITY_ERROR);
+        return ApiReturn::code(ApiCode::VIEW_SECURITY_ERROR, $message);
     }
 
     /**

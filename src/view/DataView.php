@@ -4,10 +4,12 @@ namespace magein\thinkphp_extra\view;
 
 use magein\thinkphp_extra\ApiCode;
 use magein\thinkphp_extra\ApiReturn;
+use magein\thinkphp_extra\Extra;
 use magein\thinkphp_extra\Logic;
 use magein\thinkphp_extra\MsgContainer;
 use magein\tools\common\UnixTime;
 use think\Exception;
+use think\Model;
 
 class DataView
 {
@@ -18,9 +20,9 @@ class DataView
     protected $view;
 
     /**
-     * @var \magein\thinkphp_extra\Logic
+     * @var \think\Model
      */
-    protected $logic;
+    protected $model;
 
     /**
      * DataView constructor.
@@ -39,17 +41,8 @@ class DataView
     public function setDataSecurity(DataSecurity $dataSecurity)
     {
         $this->view = $dataSecurity;
-
-        $logic = $dataSecurity->getLogic();
-
-        try {
-            if ($logic && class_exists($logic)) {
-                $this->logic = new $logic();
-                $this->view->setFields();
-            }
-        } catch (Exception $exception) {
-
-        }
+        $this->model = $dataSecurity->getModel();
+        $this->view->setFields();
     }
 
     /**
@@ -57,8 +50,8 @@ class DataView
      */
     public function response($method)
     {
-        if (!$this->logic instanceof Logic) {
-            return ApiReturn::code(ApiCode::VIEW_LOGIC_ERROR);
+        if (!$this->model instanceof Model) {
+            return ApiReturn::code(ApiCode::VIEW_MODEL_ERROR);
         }
 
         $result = false;
@@ -77,39 +70,53 @@ class DataView
     {
         $id = request()->get('id');
 
-        $model = $this->logic->model();
+        $model = $this->model;
 
-        if ($this->view->getExport()) {
+        $export = $this->view->getExport();
+        if ($export) {
             $model = $model->field($this->view->getExport());
-            $this->logic->withoutField = [];
+        } else {
+            $model = $model->withoutField($this->view->getProtected());
         }
 
-        $this->logic->model($model);
-
-        return $this->logic->find($id);
+        return $model->find($id);
     }
 
     /**
      * 获取数据列表
      * @return array|\think\Collection|\think\Paginator
      */
-    protected function lists()
+    protected function list()
     {
-
         $params = $this->search();
-        $model = $this->logic->model();
+        $model = $this->model;
         if ($params) {
             $model = $model->where($params);
         }
 
-        if ($this->view->getExport()) {
+        $sort_by = request()->get('sort_by');
+        if ($sort_by) {
+            $sort_by = explode(',', $sort_by);
+        } else {
+            $sort_by = [];
+        }
+        $model = $model->order($sort_by[0] ?? 'id', $sort_by[1] ?? 'desc');
+
+        $export = $this->view->getExport();
+        if ($export) {
             $model = $model->field($this->view->getExport());
-            $this->logic->withoutField = [];
+        } else {
+            $model = $model->withoutField($this->view->getProtected());
         }
 
-        $this->logic->model($model);
+        $page_size = request()->get('page_size', 15);
+        if ($page_size > 200) {
+            $page_size = 200;
+        }
 
-        return $this->logic->select();
+        $result = $model->paginate($page_size);
+
+        return Extra::paginate($result, $page_size);
     }
 
     /**
@@ -120,17 +127,15 @@ class DataView
     {
         $params = request()->only($this->view->getPost(), 'post');
 
-        $validate = get_class($this->logic) . 'Validate';
+        $validate = preg_replace('/Model/', 'Validate', get_class($this->model));
 
-        try {
-            if (!class_exists($validate)) {
-                $validate = '';
-            }
-        } catch (Exception $exception) {
-
+        if (class_exists($validate)) {
+            validate($validate)->check($params);
         }
 
-        return $this->logic->save($params, $validate);
+        $model = $this->model;
+
+        return $model->save($params);
     }
 
     /**
@@ -142,41 +147,29 @@ class DataView
     {
         $id = request()->put('id', 0);
 
+        if (empty($id)) {
+            return MsgContainer::msg('更新数据异常', ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
+        }
+
         $params = request()->only($this->view->getPut(), 'put');
+        unset($params['id']);
 
-        $validate = get_class($this->logic) . 'Validate';
-
-        try {
-            if (!class_exists($validate)) {
-                $validate = '';
+        $validate = preg_replace('/Model/', 'Validate', get_class($this->model));
+        if (class_exists($validate)) {
+            $validate = validate();
+            if ($validate->hasScene('put')) {
+                validate($validate)->scene('put')->check($params);
             }
-        } catch (Exception $exception) {
-
         }
 
-        if (empty($id)) {
-            return MsgContainer::msg('更新数据异常', ApiCode::HTTP_REQUEST_PARAM_ERROR);
+        $model = $this->model;
+        $record = $model::find($id);
+
+        if (empty($record)) {
+            return MsgContainer::msg('数据记录不存在', ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
         }
 
-        $params['id'] = $id;
-
-        return $this->logic->save($params, $validate, 'put');
-    }
-
-    /**
-     * 这里使用了patch 用户更新一个字段，即delete_time从有值变成0
-     * 恢复数据
-     * @return bool|int
-     */
-    protected function recovery()
-    {
-        $id = request()->patch('id');
-
-        if (empty($id)) {
-            return MsgContainer::msg('数据恢复失败', ApiCode::HTTP_REQUEST_PARAM_ERROR);
-        }
-
-        return $this->logic->recovery($id);
+        return $record->save($params);
     }
 
     /**
@@ -185,14 +178,61 @@ class DataView
      */
     protected function delete()
     {
-        $id = request()->delete('id');
-        $clear = request()->delete('clear', 0);
+        $id = request()->get('id');
+        $clear = boolval(request()->get('clear', 0));
 
         if (empty($id)) {
-            return MsgContainer::msg('数据删除失败', ApiCode::HTTP_REQUEST_PARAM_ERROR);
+            return MsgContainer::msg('数据删除失败', ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
         }
 
-        return $this->logic->delete($id, $clear);
+        if (is_int($id)) {
+            $id = [$id];
+        } elseif (is_string($id)) {
+            $id = explode(',', $id);
+        }
+
+        $model = $this->model;
+
+        if ($clear) {
+            $result = $model->force()->delete(function ($query) use ($id) {
+                $query->where('id', 'in', $id);
+            });
+        } else {
+            $result = $model::destroy(function ($query) use ($id) {
+                $query->where('id', 'in', $id);
+            });
+        }
+
+        return $result;
+    }
+
+    /**
+     * 恢复数据
+     * 这里使用了patch 用户更新一个字段，即delete_time从有值变成0
+     * @return bool|int
+     */
+    protected function recovery()
+    {
+        $id = request()->get('id');
+
+        if (empty($id)) {
+            return MsgContainer::msg('数据恢复失败', ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
+        }
+
+
+        if (is_int($id)) {
+            $id = [$id];
+        } elseif (is_string($id)) {
+            $id = explode(',', $id);
+        }
+
+        $model = $this->model;
+
+        $result = $model->restore(function ($query) use ($id) {
+            $query->where('id', 'in', $id);
+        });
+
+        return $result;
     }
 
     /**
@@ -205,7 +245,7 @@ class DataView
         if (empty($params)) {
             return [];
         }
-        unset($params['page']);
+        unset($params['page'], $params['sort_by']);
 
         // 查询参数
         $query = $this->view->getQuery();

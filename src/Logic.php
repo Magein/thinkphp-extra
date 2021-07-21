@@ -3,6 +3,8 @@
 namespace magein\thinkphp_extra;
 
 use think\db\Query;
+use think\Exception;
+use think\exception\ErrorException;
 use think\exception\ValidateException;
 
 /**
@@ -27,22 +29,10 @@ abstract class Logic
     protected $fields = [];
 
     /**
-     * 设置的条件
-     * @var array
-     */
-    protected $where = [];
-
-    /**
      * 过滤的字段
      * @var string[]
      */
     public $withoutField = ['delete_time', 'update_time'];
-
-    /**
-     * 包含回收站的数据
-     * @var bool
-     */
-    protected $withTrashed = false;
 
     /**
      * 获取实例
@@ -50,61 +40,27 @@ abstract class Logic
      */
     public static function instance()
     {
-        return new static();
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+        return self::$instance;
     }
 
     /**
      * 获取或者设置model
-     * @return \think\Model
+     * @return \think\db\Query
      */
-    public function model($model = null)
+    public function model()
     {
-        if ($model === null) {
-            $namespace = static::class . 'Model';
-            if (class_exists($namespace)) {
-                $model = new $namespace();
-            }
-        }
-
-        if ($model instanceof Query) {
-            $model = $model->getModel();
-        }
-
-        if ($this->withTrashed) {
-            $model = $model::withTrashed()
-                ->where($this->where)
-                ->order('id', 'desc')
-                ->withoutField($this->withoutField);
+        $namespace = static::class . 'Model';
+        if (class_exists($namespace)) {
+            $model = new $namespace();
+            $model = $model->withoutField($this->withoutField);
         } else {
-            $model = $model->where($this->where)
-                ->order('id', 'desc')
-                ->withoutField($this->withoutField);
+            $model = null;
         }
 
         return $model;
-
-    }
-
-    /**
-     * 设置条件
-     * @param $where
-     */
-    protected function where($where)
-    {
-        $this->where = $where;
-
-        return $this;
-    }
-
-    /**
-     * @param $withTrashed
-     * @return $this
-     */
-    public function withTrashed($withTrashed = true)
-    {
-        $this->withTrashed = $withTrashed;
-
-        return $this;
     }
 
     /**
@@ -117,6 +73,7 @@ abstract class Logic
     }
 
     /**
+     * 根据主键获取
      * @param $primary_id
      * @return mixed
      */
@@ -124,13 +81,17 @@ abstract class Logic
     {
         $model = $this->model();
 
-        if (empty($primary_id)) {
-            $record = $model->find();
-        } else {
-            $record = $model->find($primary_id);
-        }
+        return $model->find($primary_id);
+    }
 
-        return $record;
+    /**
+     * 获取最后一个
+     * @return mixed
+     */
+    public function getLast()
+    {
+        $model = $this->model();
+        return $model->order('id', 'desc')->find();
     }
 
     /**
@@ -151,13 +112,27 @@ abstract class Logic
     }
 
     /**
+     * @param int $page_id
+     * @param int $page_size
+     * @return array|\think\Paginator
+     */
+    public function paginate($page_id = 1, $page_size = 15)
+    {
+        $model = $this->model();
+
+        $records = $model->paginate($page_size);
+
+        return $records ? $records : [];
+    }
+
+    /**
      * @param $key
      * @param $field
      * @return array
      */
     public function column($key, $field)
     {
-        return $this->model->column($field, $key);
+        return $this->model()->column($field, $key);
     }
 
     /**
@@ -182,16 +157,13 @@ abstract class Logic
             }
         }
 
+        $model = $this->model();
         if ($primary) {
-            $model = self::find($primary);
-            $result = $model->save($data);
+            $record = $model::find($primary);
+            $result = $record->save($data);
             return $result === false ? false : intval($primary);
         } else {
-            $model = $this->model();
             $result = $model->save($data);
-
-            $this->model = null;
-
             if ($result) {
                 return intval($model->id);
             }

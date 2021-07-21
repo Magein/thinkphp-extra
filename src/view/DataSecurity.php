@@ -14,15 +14,15 @@ class DataSecurity
 {
     /**
      * 自动设置fields信息
-     * @var bool
+     * @var array
      */
-    protected $auto = false;
+    protected $fields = [];
 
     /**
-     * 使用的业务类
+     * 使用的模型类
      * @var string
      */
-    protected $logic = '';
+    protected $model = '';
 
     /**
      * 允许新增的数据字段
@@ -49,19 +49,31 @@ class DataSecurity
     protected $export = [];
 
     /**
-     * @return string
+     * 受保护的字段
+     * @var array
      */
-    public function getLogic(): string
+    protected $protected = ['update_time', 'delete_time'];
+
+    /**
+     * @return string|\think\Model
+     */
+    public function getModel($instance = true)
     {
-        return $this->logic;
+        $model = $this->model;
+
+        if ($model && class_exists($model)) {
+            $model = new $model();
+        }
+
+        return $model;
     }
 
     /**
-     * @param string $logic
+     * @param string $model
      */
-    public function setLogic(string $logic)
+    public function setModel(string $model)
     {
-        $this->logic = $logic;
+        $this->model = $model;
     }
 
     /**
@@ -78,7 +90,7 @@ class DataSecurity
     public function setPost($post = [])
     {
         if ($post) {
-            $this->put = is_array($post) ? $post : [$post];
+            $this->post = is_array($post) ? $post : [$post];
         }
     }
 
@@ -121,6 +133,14 @@ class DataSecurity
     /**
      * @return array
      */
+    public function getProtected(): array
+    {
+        return $this->protected;
+    }
+
+    /**
+     * @return array
+     */
     public function getExport(): array
     {
         return $this->export;
@@ -135,22 +155,16 @@ class DataSecurity
             $this->export = is_array($export) ? $export : [$export];
         }
     }
-    
+
     public function setFields()
     {
-        if ($this->auto) {
-            try {
-                if (class_exists($this->logic)) {
-                    $logic = new $logic();
-                    $fields = $logic->getFields();
-                    $this->setPost($fields);
-                    $this->setPut($fields);
-                    $this->setFields($fields);
-                    $this->setQuery($fields);
-                }
-            } catch (Exception $exception) {
-
-            }
+        if ($this->fields) {
+            $post = $this->fields;
+            unset($post[array_search('post', $post)], $post[array_search('create_time', $post)]);
+            $this->setPost($post);
+            $this->setPut($post);
+            $this->setExport($this->fields);
+            $this->setQuery($this->fields);
         }
     }
 }

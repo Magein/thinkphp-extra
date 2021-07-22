@@ -14,8 +14,6 @@ use think\exception\ValidateException;
  */
 abstract class Logic
 {
-    protected static $instance = null;
-
     /**
      * \think\Model
      * @var null
@@ -33,18 +31,6 @@ abstract class Logic
      * @var string[]
      */
     public $withoutField = ['delete_time', 'update_time'];
-
-    /**
-     * 获取实例
-     * @return static
-     */
-    public static function instance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
 
     /**
      * 获取或者设置model

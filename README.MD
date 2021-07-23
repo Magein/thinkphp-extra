@@ -167,11 +167,14 @@ class User extends DataSecurity
 | 名称 | 请求类型 | 描述 |  url  |
 | :-----| ----: | :----: | :----: |
 | get | get | 获取单条记录 需要传递id | admin/view/user/get?id=1 |
-| lists | get | 设置page表示分页，获取15条数据，查询直接携带即可 | admin/view/user/lists?page=1|
+| list | get | 设置page表示分页，获取15条数据，查询直接携带即可 | admin/view/user/lists?page=1|
+| trash | get | 回收站数据 设置page表示分页，获取15条数据，查询直接携带即可 | admin/view/user/trash?page=1|
 | post | post | 新增数据 | admin/view/user/post  |
-| put | put | 更新数据 | admin/view/user/put  |
+| put | put | 更新数据 |  需要传递id admin/view/user/put  |
 | delete | delete | 删除数据 |   admin/view/user/delete?id=1  |
+| clear | delete | 彻底删除数据 |   admin/view/user/clear?id=1  |
 | recovery | patch | 恢复数据 |  admin/view/user/delete?id=1  |
+| download | get | 下载数据 |  admin/view/user/download?page=1&name=1233  |
 
 6. 当一个类继承了ViewController就获取了resetful规范下的curd操作，当然你可以可以继承重写，只要满足进入__call的条件
 

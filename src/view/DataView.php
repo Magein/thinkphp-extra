@@ -87,31 +87,30 @@ class DataView
      */
     protected function list()
     {
-        $params = $this->search();
-        $model = $this->model;
-        if ($params) {
-            $model = $model->where($params);
-        }
-
-        $sort_by = request()->get('sort_by');
-        if ($sort_by) {
-            $sort_by = explode(',', $sort_by);
-        } else {
-            $sort_by = [];
-        }
-        $model = $model->order($sort_by[0] ?? 'id', $sort_by[1] ?? 'desc');
-
-        $export = $this->view->getExport();
-        if ($export) {
-            $model = $model->field($this->view->getExport());
-        } else {
-            $model = $model->withoutField($this->view->getProtected());
-        }
-
         $page_size = request()->get('page_size', 15);
         if ($page_size > 200) {
             $page_size = 200;
         }
+
+        $model = $this->getListModel();
+
+        $result = $model->paginate($page_size);
+
+        return Overt::paginate($result, $page_size);
+    }
+
+    /**
+     * 回收站数据
+     * @return array|\think\Collection|\think\Paginator
+     */
+    protected function trash()
+    {
+        $page_size = request()->get('page_size', 15);
+        if ($page_size > 200) {
+            $page_size = 200;
+        }
+
+        $model = $this->getListModel(true);
 
         $result = $model->paginate($page_size);
 
@@ -318,5 +317,39 @@ class DataView
         }
 
         return $condition;
+    }
+
+    /**
+     * @return \think\Model
+     */
+    private function getListModel($onlyTrashed = false)
+    {
+        $params = $this->search();
+        $model = $this->model;
+
+        if ($onlyTrashed) {
+            $model = $model::onlyTrashed();
+        }
+
+        if ($params) {
+            $model = $model->where($params);
+        }
+
+        $sort_by = request()->get('sort_by');
+        if ($sort_by) {
+            $sort_by = explode(',', $sort_by);
+        } else {
+            $sort_by = [];
+        }
+        $model = $model->order($sort_by[0] ?? 'id', $sort_by[1] ?? 'desc');
+
+        $export = $this->view->getExport();
+        if ($export) {
+            $model = $model->field($this->view->getExport());
+        } else {
+            $model = $model->withoutField($this->view->getProtected());
+        }
+
+        return $model;
     }
 }

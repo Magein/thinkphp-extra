@@ -28,12 +28,12 @@ class Authorize
         $token = $request->header('token');
         if (empty($token)) {
             // 请求要求用户的身份认证
-            return json()->code(ApiCode::HTTP_REQUEST_TOKEN_ERROR);
+            return ApiReturn::code(ApiCode::HTTP_REQUEST_TOKEN_ERROR);
         }
 
         $result = JsonToken::instance()->setKey($this->key)->verify($token);
         if (false === $result) {
-            return json()->code(ApiCode::HTTP_REQUEST_TOKEN_ERROR);
+            return ApiReturn::code(ApiCode::HTTP_REQUEST_TOKEN_ERROR);
         }
 
         if (!JsonToken::instance()->getSign()) {

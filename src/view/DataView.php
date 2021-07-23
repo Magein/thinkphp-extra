@@ -172,13 +172,12 @@ class DataView
     }
 
     /**
-     * 删除、强制删除
+     * 标记删除
      * @return mixed
      */
     protected function delete()
     {
         $id = request()->get('id');
-        $clear = boolval(request()->get('clear', 0));
 
         if (empty($id)) {
             return MsgContainer::msg('数据删除失败', ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
@@ -192,17 +191,30 @@ class DataView
 
         $model = $this->model;
 
-        if ($clear) {
-            $result = $model->force()->delete(function ($query) use ($id) {
-                $query->where('id', 'in', $id);
-            });
-        } else {
-            $result = $model::destroy(function ($query) use ($id) {
-                $query->where('id', 'in', $id);
-            });
+        return $model::destroy($id);
+    }
+
+    /**
+     * 彻底删除
+     * @return bool
+     */
+    protected function clear()
+    {
+        $id = request()->get('id');
+
+        if (empty($id)) {
+            return MsgContainer::msg('数据删除失败', ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
         }
 
-        return $result;
+        if (is_int($id)) {
+            $id = [$id];
+        } elseif (is_string($id)) {
+            $id = explode(',', $id);
+        }
+
+        $model = $this->model;
+
+        return $model::destroy($id, true);
     }
 
     /**

@@ -18,7 +18,7 @@ class Overt
             // 总数
             'total' => 1,
             // 每页数量
-            'per_page' => $page_size,
+            'page_size' => intval($page_size),
             // 当前页
             'current_page' => 1,
             // 最后一页

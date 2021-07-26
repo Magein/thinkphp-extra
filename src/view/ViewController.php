@@ -40,11 +40,11 @@ class ViewController
         $action = $path[2] ?? '';
 
         if (empty($name) || empty($action)) {
-            return ApiReturn::error(ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
+            return ApiReturn::code(ApiCode::HTTP_REQUEST_QUERY_ILLEGAL);
         }
 
         if (false === $this->auth()) {
-            return ApiReturn::error(ApiCode::HTTP_REQUEST_API_ILLEGAL);
+            return ApiReturn::code(ApiCode::HTTP_REQUEST_API_ILLEGAL, '', request()->pathinfo());
         };
 
         $name = (new Variable())->pascal($name);

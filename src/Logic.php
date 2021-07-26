@@ -65,6 +65,10 @@ abstract class Logic
      */
     public function find($primary_id = null)
     {
+        if (empty($primary_id)) {
+            return false;
+        }
+
         $model = $this->model();
 
         return $model->find($primary_id);
@@ -143,7 +147,8 @@ abstract class Logic
             }
         }
 
-        $model = $this->model();
+        $model = $this->model()->getModel();
+
         if ($primary) {
             $record = $model::find($primary);
             $result = $record->save($data);
@@ -176,7 +181,7 @@ abstract class Logic
             }
         }
 
-        return $this->model()->saveAll($data);
+        return $this->model()->getModel()->saveAll($data);
     }
 
     /**

@@ -37,6 +37,12 @@ class Model extends \think\Model
     protected $defaultSoftDelete = 0;
 
     /**
+     * 自动写入创建和更新的时间戳字段
+     * @var bool
+     */
+    protected $autoWriteTimestamp = true;
+
+    /**
      * 只读字段
      * @var array
      */
@@ -44,6 +50,22 @@ class Model extends \think\Model
         'id',
         'create_time',
     ];
+
+    /**
+     * 设置密码
+     * @param $value
+     * @return bool|string
+     */
+    protected function setPasswordAttr($value)
+    {
+        if (function_exists('password')) {
+            $value = password($value);
+        } else {
+            $value = sha1(md5(123456));
+        }
+
+        return $value;
+    }
 
     /**
      * @param $value

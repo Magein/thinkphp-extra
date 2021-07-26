@@ -2,6 +2,7 @@
 
 namespace magein\thinkphp_extra;
 
+use magein\thinkphp_extra\table\MTable;
 use Phinx\Db\Adapter\MysqlAdapter;
 use think\migration\db\Table;
 
@@ -40,7 +41,18 @@ class Migrate
      * @param $table
      * @param string $comment
      */
-    public function __construct(Table $table, $comment = '')
+    public function __construct($table = null, $comment = '')
+    {
+        if ($table) {
+            $this->setTable($table, $comment);
+        }
+    }
+
+    /**
+     * @param \think\migration\db\Table $table
+     * @param string $comment
+     */
+    public function setTable(Table $table, $comment = '')
     {
         $this->table = $table;
         if ($comment) {
@@ -207,6 +219,15 @@ class Migrate
         }
 
         $this->table->create();
+    }
+
+    /**
+     * 快速创建表
+     * @param \magein\thinkphp_extra\table\MTable $table
+     */
+    public function fast(MTable $table)
+    {
+        $table->table($this->table);
     }
 
     /**

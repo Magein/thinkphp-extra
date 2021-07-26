@@ -19,6 +19,7 @@ class MMember extends MTable
         $table->addColumn('password', 'string', ['comment' => '密码']);
         $table->addColumn('phone', 'string', ['comment' => '手机号码']);
         $table->addColumn('nickname', 'string', ['comment' => '昵称', 'default' => '']);
+        $table->addColumn('avatar', 'string', ['comment' => '头像', 'default' => '']);
         $table->addColumn('email', 'string', ['comment' => '邮箱地址', 'default' => '']);
         $table->addColumn('sex', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '性别 0 保密 secret 1 男 man 2 女 woman', 'default' => 0]);
         $table->addColumn('age', 'integer', ['comment' => '年龄', 'default' => 0]);

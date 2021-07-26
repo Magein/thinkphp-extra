@@ -21,9 +21,9 @@ class MMemberOauth extends MTable
         $table->addColumn('nickname', 'string', ['comment' => '昵称', 'default' => '']);
         $table->addColumn('sex', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '性别 0 保密 secret 1 男 man 2 女 woman', 'default' => 0]);
         $table->addColumn('avatar', 'string', ['comment' => '头像', 'default' => '']);
-        $table->addColumn('province_id', 'integer', ['comment' => '省', 'default' => '']);
-        $table->addColumn('city_id', 'integer', ['comment' => '市', 'default' => '']);
-        $table->addColumn('area_id', 'integer', ['comment' => '县', 'default' => '']);
+        $table->addColumn('province_id', 'integer', ['comment' => '省', 'default' => 0]);
+        $table->addColumn('city_id', 'integer', ['comment' => '市', 'default' => 0]);
+        $table->addColumn('area_id', 'integer', ['comment' => '县', 'default' => 0]);
         $table->addColumn('union_id', 'string', ['comment' => '唯一标识', 'default' => '']);
         $table->addColumn('create_time', 'integer', ['comment' => '创建时间']);
         $table->addColumn('update_time', 'integer', ['comment' => '更新时间']);

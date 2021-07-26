@@ -20,9 +20,9 @@ class MMemberAddress extends MTable
         $table->addColumn('nickname', 'string', ['comment' => '收货人名称']);
         $table->addColumn('phone', 'string', ['comment' => '收货人号码']);
         $table->addColumn('spare_phone', 'string', ['comment' => '备用号码 收货人联系不上的时候可以联系的号码']);
-        $table->addColumn('province_id', 'integer', ['comment' => '省', 'default' => '']);
-        $table->addColumn('city_id', 'integer', ['comment' => '市', 'default' => '']);
-        $table->addColumn('area_id', 'integer', ['comment' => '县', 'default' => '']);
+        $table->addColumn('province_id', 'integer', ['comment' => '省', 'default' => 0]);
+        $table->addColumn('city_id', 'integer', ['comment' => '市', 'default' => 0]);
+        $table->addColumn('area_id', 'integer', ['comment' => '县', 'default' => 0]);
         $table->addColumn('address', 'string', ['comment' => '所在地', 'default' => '']);
         $table->addColumn('tag', 'integer', ['comment' => '标签', 'default' => 0]);
         $table->addColumn('used', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '常用 0 不 no 1 是 yes', 'default' => 1]);

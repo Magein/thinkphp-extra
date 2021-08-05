@@ -23,9 +23,11 @@ class MMemberAddress extends MTable
         $table->addColumn('province_id', 'integer', ['comment' => '省', 'default' => 0]);
         $table->addColumn('city_id', 'integer', ['comment' => '市', 'default' => 0]);
         $table->addColumn('area_id', 'integer', ['comment' => '县', 'default' => 0]);
-        $table->addColumn('address', 'string', ['comment' => '所在地', 'default' => '']);
+        $table->addColumn('address', 'string', ['comment' => '位置', 'default' => '']);
+        $table->addColumn('house', 'string', ['comment' => '门牌号', 'default' => '']);
+        $table->addColumn('location', 'string', ['comment' => '经纬度 经度在前，纬度在后', 'default' => '']);
         $table->addColumn('tag', 'integer', ['comment' => '标签', 'default' => 0]);
-        $table->addColumn('used', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '常用 0 不 no 1 是 yes', 'default' => 1]);
+        $table->addColumn('is_use', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '常用 0 不 no 1 是 yes', 'default' => 0]);
         $table->addColumn('create_time', 'integer', ['comment' => '创建时间']);
         $table->addColumn('update_time', 'integer', ['comment' => '更新时间']);
         $table->addColumn('delete_time', 'integer', ['comment' => '删除时间', 'default' => 0]);

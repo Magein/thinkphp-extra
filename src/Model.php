@@ -252,11 +252,9 @@ class Model extends \think\Model
     {
         if ($value && is_array($value)) {
             $value = implode(',', $value);
-        } else {
-            $value = '';
         }
 
-        return $value;
+        return $value ?: '';
     }
 
     /**

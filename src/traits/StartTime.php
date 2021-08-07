@@ -12,12 +12,11 @@ trait StartTime
     public function getEffectivegList()
     {
         try {
-            $condition = [
-                'start_time' => ['elt', time()],
-                'end_time' => ['egt', time()],
-            ];
             $model = $this->model();
-            $records = $model->where($condition)->order('sort', 'asc')->select();
+            $records = $model->whereTime('start_time', '<=', time())
+                ->whereTime('end_time', '>=', time())
+                ->order('sort', 'asc')
+                ->select();
         } catch (DbException $exception) {
             MsgContainer::msg($exception->getMessage());
             $records = null;
@@ -32,11 +31,8 @@ trait StartTime
     public function getNotStartList()
     {
         try {
-            $condition = [
-                'start_time' => ['gt', time()],
-            ];
             $model = $this->model();
-            $records = $model->where($condition)->order('sort', 'asc')->select();
+            $records = $model->whereTime('start_time', '>', time())->order('sort', 'asc')->select();
         } catch (DbException $exception) {
             MsgContainer::msg($exception->getMessage());
             $records = null;
@@ -52,11 +48,8 @@ trait StartTime
     public function getOverList()
     {
         try {
-            $condition = [
-                'end_time' => ['lt', time()],
-            ];
             $model = $this->model();
-            $records = $model->where($condition)->order('sort', 'asc')->select();
+            $records = $model->whereTime('end_time', '<', time())->order('sort', 'asc')->select();
         } catch (DbException $exception) {
             MsgContainer::msg($exception->getMessage());
             $records = null;

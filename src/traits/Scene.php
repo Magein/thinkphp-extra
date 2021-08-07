@@ -19,19 +19,15 @@ trait Scene
         if ($scene && $records) {
             $list = [];
             foreach ($records as $item) {
-                if (empty($item['scene'])) {
+                if (empty($item->scene_array)) {
                     continue;
                 }
-                if (is_string($item['scene'])) {
-                    $item['scene'] = explode(',', $item['scene']);
-                }
-                if (in_array($scene, $item['scene'])) {
+                if (in_array($scene, $item->scene_array)) {
                     $list[] = $item;
                 }
             }
             $records = $list;
         }
-
         return $records;
     }
 
@@ -43,7 +39,11 @@ trait Scene
     {
         try {
             $model = $this->model();
-            $records = $model->where('status', 1)->order('sort', 'asc')->select();
+            $records = $model
+                ->append(['scene_array'])
+                ->where('status', 1)
+                ->order('sort', 'asc')
+                ->select();
         } catch (DbException $exception) {
             MsgContainer::msg($exception->getMessage());
             $records = null;
@@ -59,13 +59,13 @@ trait Scene
     public function getEffectivegListByScene($scene = null)
     {
         try {
-            $condition = [
-                'start_time' => ['elt', time()],
-                'end_time' => ['egt', time()],
-                'status' => 1,
-            ];
             $model = $this->model();
-            $records = $model->where($condition)->order('sort', 'asc')->select();
+            $records = $model->whereTime('start_time', '<=', time())
+                ->whereTime('end_time', '>=', time())
+                ->where('status', 1)
+                ->order('sort', 'asc')
+                ->append(['scene_array'])
+                ->select();
         } catch (DbException $exception) {
             MsgContainer::msg($exception->getMessage());
             $records = null;

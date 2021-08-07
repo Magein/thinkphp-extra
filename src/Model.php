@@ -268,10 +268,12 @@ class Model extends \think\Model
 
     /**
      * @param $value
+     * @param $data
      * @return array
      */
-    protected function getSceneArrayAttr($value): array
+    protected function getSceneArrayAttr($value, $data): array
     {
+        $value = $data['scene'] ?? '';
         return $this->transArray($value);
     }
 

@@ -1,0 +1,122 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "b6025380bb26c3e57e7548c3d2073fa7",
+    "packages": [
+        {
+            "name": "magein/thinkphp-logic",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Magein/thinkphp-logic.git",
+                "reference": "7b953552a69f3690088fdcf74d9fe0043eace062"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Magein/thinkphp-logic/zipball/7b953552a69f3690088fdcf74d9fe0043eace062",
+                "reference": "7b953552a69f3690088fdcf74d9fe0043eace062",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "magein/thinkphp-extra": "*@dev",
+                "magein/tools": "*@dev",
+                "php": ">=7.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "magein\\thinkphp_logic\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "xiaomage",
+                    "email": "1154699897@qq.com"
+                }
+            ],
+            "description": "thinkphp6扩展的业务文件",
+            "homepage": "https://github.com/magein/thinkphp-extra",
+            "support": {
+                "issues": "https://github.com/Magein/thinkphp-logic/issues",
+                "source": "https://github.com/Magein/thinkphp-logic/tree/master"
+            },
+            "time": "2021-08-07T02:53:21+00:00"
+        },
+        {
+            "name": "magein/tools",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Magein/tools.git",
+                "reference": "056d033da4dfe895f59f348105d3205088f63a65"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Magein/tools/zipball/056d033da4dfe895f59f348105d3205088f63a65",
+                "reference": "056d033da4dfe895f59f348105d3205088f63a65",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "magein\\tools\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "xiaomage",
+                    "email": "1154699897@qq.com"
+                }
+            ],
+            "description": "开发中常用的php工具类",
+            "homepage": "https://github.com/magein/tools",
+            "support": {
+                "issues": "https://github.com/Magein/tools/issues",
+                "source": "https://github.com/Magein/tools/tree/master"
+            },
+            "time": "2021-08-05T14:50:35+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "magein/tools": 20,
+        "magein/thinkphp-logic": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.1"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
+}

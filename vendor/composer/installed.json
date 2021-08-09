@@ -1,0 +1,110 @@
+{
+    "packages": [
+        {
+            "name": "magein/thinkphp-logic",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Magein/thinkphp-logic.git",
+                "reference": "7b953552a69f3690088fdcf74d9fe0043eace062"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Magein/thinkphp-logic/zipball/7b953552a69f3690088fdcf74d9fe0043eace062",
+                "reference": "7b953552a69f3690088fdcf74d9fe0043eace062",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "magein/thinkphp-extra": "*@dev",
+                "magein/tools": "*@dev",
+                "php": ">=7.1"
+            },
+            "time": "2021-08-07T02:53:21+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "magein\\thinkphp_logic\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "xiaomage",
+                    "email": "1154699897@qq.com"
+                }
+            ],
+            "description": "thinkphp6扩展的业务文件",
+            "homepage": "https://github.com/magein/thinkphp-extra",
+            "support": {
+                "issues": "https://github.com/Magein/thinkphp-logic/issues",
+                "source": "https://github.com/Magein/thinkphp-logic/tree/master"
+            },
+            "install-path": "../magein/thinkphp-logic"
+        },
+        {
+            "name": "magein/tools",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Magein/tools.git",
+                "reference": "056d033da4dfe895f59f348105d3205088f63a65"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Magein/tools/zipball/056d033da4dfe895f59f348105d3205088f63a65",
+                "reference": "056d033da4dfe895f59f348105d3205088f63a65",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "time": "2021-08-05T14:50:35+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "magein\\tools\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "xiaomage",
+                    "email": "1154699897@qq.com"
+                }
+            ],
+            "description": "开发中常用的php工具类",
+            "homepage": "https://github.com/magein/tools",
+            "support": {
+                "issues": "https://github.com/Magein/tools/issues",
+                "source": "https://github.com/Magein/tools/tree/master"
+            },
+            "install-path": "../magein/tools"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}

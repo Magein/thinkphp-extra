@@ -1,6 +1,6 @@
 {
-  "name": "magein/thinkphp-extra",
-  "description": "thinkphp6扩展文件",
+  "name": "magein/thinkphp-logic",
+  "description": "thinkphp6扩展的业务文件",
   "type": "library",
   "homepage": "https://github.com/magein/thinkphp-extra",
   "license": "Apache-2.0",
@@ -12,15 +12,21 @@
   ],
   "require": {
     "php": ">=7.1",
-    "magein/tools": "dev-master",
-    "magein/thinkphp-logic": "*@dev"
+    "magein/tools": "*@dev",
+    "magein/thinkphp-extra": "*@dev"
   },
   "config": {
     "preferred-install": "dist"
   },
   "autoload": {
     "psr-4": {
-      "magein\\thinkphp_extra\\": "src/"
+      "magein\\thinkphp_logic\\": "src/"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://mirrors.aliyun.com/composer/"
     }
   }
 }

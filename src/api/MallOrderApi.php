@@ -5,7 +5,7 @@ namespace magein\thinkphp_extra\api;
 
 use hg\apidoc\annotation as Apidoc;
 
-class MallOrder
+class MallOrderApi
 {
     /**
      * @Apidoc\Title("创建订单")

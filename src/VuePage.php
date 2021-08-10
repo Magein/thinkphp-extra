@@ -46,12 +46,13 @@ class VuePage
         $header = '';
         $form = '';
         $search = '';
-        $trans = [];
+        $const = [];
+        $trans = ['\'create_time\''];
         foreach ($fields as $item) {
             $field = $item['Field'];
             $type = $item['Type'];
 
-            if (in_array($field, ['create_time', 'update_time', 'delete_time'])) {
+            if (in_array($field, ['update_time', 'delete_time'])) {
                 continue;
             }
             $comment = $item['Comment'];
@@ -68,36 +69,60 @@ class VuePage
                 ];
             }
 
-            $header .= '\'' . $field . "',";
-            if (!in_array($field, ['id'])) {
-                $form .= '\'' . $field . "',";
+            if ($field === 'status') {
+                $header .= 'page.build.header.switch(\'' . $field . "'),";
+            } elseif (in_array($field, ['icon', 'image', 'images', 'photo', 'img', 'head', 'avatar'])) {
+                $header .= 'page.build.header.image(\'' . $field . "'),";
+            } elseif (in_array($field, ['action', 'type', 'method', 'scene'])) {
+                $trans[] = '[\'' . $field . '\',' . $field . ']';
+            } else {
+                $header .= '\'' . $field . "',";
+            }
+
+            if (!in_array($field, ['id', 'create_time'])) {
+                if ($field === 'status') {
+                    $form .= 'page.build.form.radio(\'' . $field . "'),";
+                } else if ($field === 'scene') {
+                    $form .= 'page.build.form.checkbox(\'' . $field . "'),";
+                } else if (in_array($field, ['icon', 'image', 'images', 'photo', 'img', 'head', 'avatar'])) {
+                    $form .= 'page.build.form.image(\'' . $field . "'),";
+                } else {
+                    $form .= '\'' . $field . "',";
+                }
             }
 
             if (in_array($field, ['id', 'phone', 'order_no', 'good_no'])) {
                 $search .= "'" . $field . "',";
             }
 
-            if (preg_match('/^tinyint/', $type)) {
-                $trans[] = [
+            if (preg_match('/^tinyint/', $type) || in_array($field, ['scene'])) {
+                $const[] = [
                     'field' => $field,
                     'comment' => $item['Comment'],
                 ];
             }
         }
 
-        $trans_string = '';
-        if ($trans) {
-            foreach ($trans as $item) {
+        $trans = implode(',', $trans);
+
+        $const_string = '';
+        if ($const) {
+            foreach ($const as $item) {
                 $comment = explode(' ', $item['comment']);
                 $comment = array_slice($comment, 1);
                 $comment = array_chunk($comment, 3);
-                $trans_string .= 'const ' . $item['field'] . ' = ';
-                $trans_string .= '[';
-                foreach ($comment as $com) {
-                    $trans_string .= '{value:"' . $com[0] . '",text:"' . $com[1] . '"},';
+
+                if (empty($comment)) {
+                    continue;
                 }
-                $trans_string = trim($trans_string, ',');
-                $trans_string .= "];\n\n";
+
+                $const_string .= 'const ' . $item['field'] . ' = ';
+                $const_string .= '[';
+                foreach ($comment as $com) {
+                    $const_string .= '{value:"' . $com[0] . '",text:"' . $com[1] . '"},';
+                }
+                $const_string = trim($const_string, ',');
+                $const_string .= "];\n\n";
             }
         }
 
@@ -140,7 +165,7 @@ class VuePage
 			
 			const dictionaries=$dictionary;
 			
-			$trans_string
+			$const_string
 			
 			var page = new Page();
 			page.setResetful('$resetful');
@@ -151,7 +176,7 @@ class VuePage
 			page.setSelection();
 			page.setHeader([$header]);
 			page.setList(state.list);
-			page.setTrans();
+			page.setTrans($trans);
 			page.setForm([$form]);
 
 			provide('pages', page);

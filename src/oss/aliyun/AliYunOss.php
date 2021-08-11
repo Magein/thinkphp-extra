@@ -12,6 +12,7 @@ use OSS\OssClient;
  * composer require aliyuncs/oss-sdk-php:"~^2.4"
  *
  * Class AliYunOss
+ *
  * @package magein\thinkphp_extra\oss\aliyun
  */
 class AliYunOss

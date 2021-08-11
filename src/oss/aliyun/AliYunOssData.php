@@ -26,6 +26,24 @@ class AliYunOssData
     private $bucket = '';
 
     /**
+     * 使用https
+     * @var bool
+     */
+    private $use_ssl = true;
+
+    /**
+     * 保存的路径
+     * @var string
+     */
+    private $save_path = '';
+
+    /**
+     * 保存的名称
+     * @var string
+     */
+    private $save_name = '';
+
+    /**
      * @return string
      */
     public function getAccessKeyId(): string
@@ -87,5 +105,61 @@ class AliYunOssData
     public function setBucket(string $bucket)
     {
         $this->bucket = $bucket;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUseSsl(): bool
+    {
+        return $this->use_ssl;
+    }
+
+    /**
+     * @param bool $use_ssl
+     */
+    public function setUseSsl(bool $use_ssl): void
+    {
+        $this->use_ssl = $use_ssl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSavePath(): string
+    {
+        if (empty($this->save_path)) {
+            $this->save_path = 'uploads';
+        }
+
+        return $this->save_path;
+    }
+
+    /**
+     * @param string $save_path
+     */
+    public function setSavePath(string $save_path): void
+    {
+        $this->save_path = $save_path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSaveName(): string
+    {
+        if (empty($this->save_name)) {
+            $this->save_name = date('YmdHi');
+        }
+
+        return $this->save_name;
+    }
+
+    /**
+     * @param string $save_name
+     */
+    public function setSaveName(string $save_name): void
+    {
+        $this->save_name = $save_name;
     }
 }

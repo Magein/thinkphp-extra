@@ -2,6 +2,7 @@
 
 namespace magein\thinkphp_extra\api;
 
+use app\common\Upload;
 use app\components\good\good_category\GoodCategory;
 use magein\thinkphp_extra\ApiReturn;
 use magein\thinkphp_logic\app\app_banner\AppBanner;
@@ -81,14 +82,16 @@ class MallBaseApi
 
     /**
      * @Apidoc\Title("上传图片")
+     * @Apidoc\Method ("POST")
      * @Apidoc\Url("/mall/base/uploadImage")
-     * @Apidoc\Returned("id", type="int", desc="id")
-     * @Apidoc\Returned("pid", type="int", desc="父级ID")
-     * @Apidoc\Returned("title", type="string", desc="分类标题")
-     * @Apidoc\Returned("icon", type="string", desc="分类图标")
+     * @Apidoc\Param("image", type="binary",require=true ,desc="提交的name中，用于后端接受")
+     * @Apidoc\Returned("url", type="string", desc="用于提交保存的地址")
+     * @Apidoc\Returned("http_url", type="string", desc="用于前段显示地址")
      */
     public function uploadImage()
     {
-        return ApiReturn::success(GoodCategory::instance()->getListByScene());
+        $result = (new Upload())->image();
+
+        return ApiReturn::auto($result);
     }
 }

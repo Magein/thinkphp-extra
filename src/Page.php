@@ -6,12 +6,19 @@ use magein\tools\common\Variable;
 use think\facade\Db;
 
 /**
- * 在路由文件中添加一下代码
- *
+ * 生成vue页面
  * 访问 xxx.com/vue-page?table=member_finance&resetful=member_finance
  */
 //Route::rule('vue-page', function () {
-//    (new \magein\thinkphp_extra\VuePage())->version1();
+//    (new \magein\thinkphp_extra\Page())->vue();
+//});
+
+/**
+ * 根据数据生成文档字段
+ * 访问 xxx.com/docs?table=member_finance
+ */
+//Route::rule('vue-page', function () {
+//    (new \magein\thinkphp_extra\Page())->docs();
 //});
 
 /**
@@ -19,9 +26,12 @@ use think\facade\Db;
  * Class VuePage
  * @package magein\thinkphp_extra
  */
-class VuePage
+class Page
 {
-    public function version1()
+    /**
+     * 构建vue页面
+     */
+    public function vue()
     {
         $table = request()->get('table');
         $resetful = request()->get('resetful');
@@ -199,5 +209,76 @@ EOF;
         echo "<pre>";
         echo htmlspecialchars($pages);
         echo "</pre>";
+    }
+
+    public function docs()
+    {
+        $table = request()->get('table');
+        $title = request()->get('title');
+
+        $fields = Db::query('show full columns from ' . (new Variable())->underline($table));
+
+        // 获取的数据结果
+        $get = [];
+
+        // 提交的数据结果
+        $post = [];
+
+        foreach ($fields as $item) {
+            $field = $item['Field'];
+            $type = $item['Type'];
+
+            if (in_array($field, ['update_time', 'delete_time', 'password', 'username'])) {
+                continue;
+            }
+
+            $type = preg_replace('/[\d|\(\),]+/', '', $type);
+
+            if ($type === 'varchar' || $type === 'char') {
+                $type = 'string';
+            } elseif ($type === 'decimal') {
+                $type = 'float';
+            } elseif ($type === 'int' || $type === 'tinyint') {
+                $type = 'integer';
+            }
+
+            $data = [
+                'type' => $type,
+                'comment' => $item['Comment'],
+                'field' => $field
+            ];
+
+            if (in_array($field, ['id', 'create_time'])) {
+                $get[] = $data;
+                continue;
+            }
+            $get[] = $data;
+            $post[] = $data;
+        }
+
+        $get_string = '* @Apidoc\Method("GET")' . '<br/>';
+        $get_string .= '* @Apidoc\Param("id",type="integer",require=false,desc="主键")' . '<br/>';
+        $get_string .= '* @Apidoc\Param("page",type="integer",require=false,desc="第几页")' . '<br/>';
+        $get_string .= '* @Apidoc\Param("page_size",type="integer",require=false,desc="每页数量")' . '<br/>';
+        if ($get) {
+            foreach ($get as $item) {
+                $get_string .= '* @Apidoc\Returned("' . $item['field'] . '", type="' . $item['type'] . '", desc="' . $item['comment'] . '")';
+                $get_string .= "<br/>";
+            }
+        }
+
+        $post_string = '* @Apidoc\Method("POST")' . '<br/>';
+        if ($post) {
+            foreach ($post as $item) {
+                $post_string .= '* @Apidoc\Param("' . $item['field'] . '", type="' . $item['type'] . '",require=true, desc="' . $item['comment'] . '")';
+                $post_string .= "<br/>";
+            }
+        }
+
+        echo $get_string;
+        echo '<br/>';
+        echo '<br/>';
+        echo '<br/>';
+        echo $post_string;
     }
 }

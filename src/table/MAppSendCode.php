@@ -7,7 +7,7 @@ use Phinx\Db\Adapter\MysqlAdapter;
 use think\migration\db\Table;
 
 
-class MAppQrCodeToken extends MTable
+class MAppSendCode extends MTable
 {
     /**
      * @param \think\migration\db\Table $table
@@ -15,16 +15,15 @@ class MAppQrCodeToken extends MTable
      */
     public function table(Table $table)
     {
-        $table->setComment('应用程序扫码登录token值');
-        $table->addColumn('token', 'char', ['limit' => 12, 'comment' => 'token值']);
-        $table->addColumn('role', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '角色 1 管理员 admin 2 员工 employee']);
+        $table->setComment('发送手机验证码');
+        $table->addColumn('phone', 'char', ['limit' => 11, 'comment' => '手机号码']);
+        $table->addColumn('scene', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '发送场景 1 注册 register 2 验证 verify']);
+        $table->addColumn('code', 'string', ['comment' => '验证码']);
         $table->addColumn('expire_time', 'integer', ['comment' => '过期时间']);
-        $table->addColumn('uuid', 'integer', ['comment' => '用户标识', 'default' => 0]);
-        $table->addColumn('ip', 'string', ['comment' => 'IP地址', 'default' => '']);
         $table->addColumn('create_time', 'integer', ['comment' => '创建时间']);
         $table->addColumn('update_time', 'integer', ['comment' => '更新时间']);
         $table->addColumn('delete_time', 'integer', ['comment' => '删除时间', 'default' => 0]);
-        $table->addIndex('token', ['unique' => true, 'name' => 'token']);
+        $table->addIndex('phone');
 
         $table->create();
     }

@@ -140,6 +140,9 @@ class AliYunOssData
      */
     public function setSavePath(string $save_path): void
     {
+        $save_path = trim($save_path, '/');
+        $save_path = trim($save_path);
+
         $this->save_path = $save_path;
     }
 

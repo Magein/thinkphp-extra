@@ -256,13 +256,13 @@ EOF;
             $post[] = $data;
         }
 
-        $get_string = '* @Apidoc\Method("GET")' . '<br/>';
-        $get_string .= '* @Apidoc\Param("id",type="integer",require=false,desc="主键")' . '<br/>';
-        $get_string .= '* @Apidoc\Param("page",type="integer",require=false,desc="第几页")' . '<br/>';
-        $get_string .= '* @Apidoc\Param("page_size",type="integer",require=false,desc="每页数量")' . '<br/>';
+        $get_string = '* @Apidoc\Method("GET"),' . '<br/>';
+        $get_string .= '* @Apidoc\Param("id",type="integer",require=false,desc="主键"),' . '<br/>';
+        $get_string .= '* @Apidoc\Param("page",type="integer",require=false,desc="第几页"),' . '<br/>';
+        $get_string .= '* @Apidoc\Param("page_size",type="integer",require=false,desc="每页数量"),' . '<br/>';
         if ($get) {
             foreach ($get as $item) {
-                $get_string .= '* @Apidoc\Returned("' . $item['field'] . '", type="' . $item['type'] . '", desc="' . $item['comment'] . '")';
+                $get_string .= '* @Apidoc\Returned("' . $item['field'] . '", type="' . $item['type'] . '", desc="' . $item['comment'] . '"),';
                 $get_string .= "<br/>";
             }
         }
@@ -270,7 +270,7 @@ EOF;
         $post_string = '* @Apidoc\Method("POST")' . '<br/>';
         if ($post) {
             foreach ($post as $item) {
-                $post_string .= '* @Apidoc\Param("' . $item['field'] . '", type="' . $item['type'] . '",require=true, desc="' . $item['comment'] . '")';
+                $post_string .= '* @Apidoc\Param("' . $item['field'] . '", type="' . $item['type'] . '",require=true, desc="' . $item['comment'] . '"),';
                 $post_string .= "<br/>";
             }
         }

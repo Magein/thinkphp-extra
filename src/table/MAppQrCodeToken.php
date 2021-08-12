@@ -16,6 +16,7 @@ class MAppQrCodeToken extends MTable
     {
         $table->setComment('应用程序扫码登录token值');
         $table->addColumn('token', 'char', ['limit' => 32, 'comment' => 'token值']);
+        $table->addColumn('role', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'comment' => '角色 1 管理员 admin']);
         $table->addColumn('expire_time', 'integer', ['comment' => '过期时间']);
         $table->addColumn('uuid', 'integer', ['comment' => '用户标识', 'default' => 0]);
         $table->addColumn('ip', 'string', ['comment' => 'IP地址', 'default' => '']);
